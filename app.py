@@ -26,9 +26,8 @@ app = FastAPI(
 )
 
 origins = [
-    '*'
-    # 'https://roaring-bienenstitch-1d676b.netlify.app',
-    # 'roaring-bienenstitch-1d676b.netlify.app'
+    'https://roaring-bienenstitch-1d676b.netlify.app',
+    'roaring-bienenstitch-1d676b.netlify.app'
 ]
 
 app.add_middleware(
@@ -40,3 +39,7 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix='/api', tags=['API'])
+
+
+if __name__ == '__main__':
+    uvicorn.run(app)
