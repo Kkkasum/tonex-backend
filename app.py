@@ -25,18 +25,19 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# origins = [
-#     'https://roaring-bienenstitch-1d676b.netlify.app',
-#     'roaring-bienenstitch-1d676b.netlify.app'
-# ]
-#
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=['GET', 'POST'],
-#     allow_headers=['*']
-# )
+origins = [
+    '*'
+    # 'https://roaring-bienenstitch-1d676b.netlify.app',
+    # 'roaring-bienenstitch-1d676b.netlify.app'
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['GET', 'POST'],
+    allow_headers=['*']
+)
 
 app.include_router(api_router, prefix='/api', tags=['API'])
 
