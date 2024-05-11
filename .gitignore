@@ -111,4 +111,4 @@ build
 dist
 .DS_Store
 
-frontend/*
+frontend
