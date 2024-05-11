@@ -26,8 +26,9 @@ app = FastAPI(
 )
 
 origins = [
-    'https://roaring-bienenstitch-1d676b.netlify.app',
-    'roaring-bienenstitch-1d676b.netlify.app'
+    '*'
+    # 'https://roaring-bienenstitch-1d676b.netlify.app',
+    # 'roaring-bienenstitch-1d676b.netlify.app'
 ]
 
 app.add_middleware(
