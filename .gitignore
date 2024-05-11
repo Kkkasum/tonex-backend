@@ -106,3 +106,5 @@ images/*
 secret/*
 
 frontend
+
+.DS_Store
