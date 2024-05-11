@@ -40,7 +40,3 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix='/api', tags=['API'])
-
-
-if __name__ == '__main__':
-    uvicorn.run(app)
