@@ -35,7 +35,8 @@ async def add_user(user: AddUser):
         )
     else:
         return AddUserResponse(
-            status=status.HTTP_201_CREATED
+            status=status.HTTP_201_CREATED,
+            detail='OK'
         )
 
 

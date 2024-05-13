@@ -9,7 +9,7 @@ class AddUser(BaseModel):
 
 class AddUserResponse(BaseModel):
     status: int
-    detail: str | None
+    detail: str
 
 
 class UserResponse(BaseModel):
