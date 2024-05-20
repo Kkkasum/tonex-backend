@@ -27,11 +27,14 @@ class UsersRepo(Database):
 
             return res[0], refs, res[1], res[2]
 
-    async def get_user_wallet(self, user_id: int) -> str:
+    async def get_user_wallet(self, user_id: int) -> str | None:
         async with self.session_maker() as session:
             query = select(User.address)\
                 .where(User.id == user_id)
             res = (await session.execute(query)).first()
+
+            if not res:
+                return
 
             return res[0]
 
