@@ -63,3 +63,7 @@ class ClaimContract(Contract):
     @property
     def op(self) -> ClaimContractOp:
         return ClaimContractOp()
+
+    @property
+    def contract_address(self) -> Address:
+        return Address('kQDYZaKkR_R9xg9vEETC6bJ7wkttJOC1MxU_SZ-UF0HqinES').to_str(is_user_friendly=True)

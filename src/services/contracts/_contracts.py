@@ -59,9 +59,12 @@ class ContractsService:
         claim_contract = await ClaimContract.from_config(provider=self.provider, admin_address=highload_wallet.address)
         user_contract = await self._create_user_contract(
             provider=self.provider,
-            admin_address=claim_contract.address,
+            admin_address=claim_contract.contract_address,
             user_wallet=user_wallet
         )
+
+        logger.success(f'{claim_contract.address.to_str(is_user_friendly=True), claim_contract.contract_address}')
+        logger.success(f'{user_contract.address.to_str(is_user_friendly=True)}')
 
         print(highload_wallet.address)
         print(claim_contract.address)
