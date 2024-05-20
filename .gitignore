@@ -103,7 +103,7 @@ connections/*
 
 images/*
 
-secret/*
+#secret/*
 
 frontend
 
