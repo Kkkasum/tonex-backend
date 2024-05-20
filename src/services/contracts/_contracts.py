@@ -63,9 +63,6 @@ class ContractsService:
             user_wallet=user_wallet
         )
 
-        logger.success(f'{claim_contract.address.to_str(is_user_friendly=True), claim_contract.contract_address}')
-        logger.success(f'{user_contract.address.to_str(is_user_friendly=True)}')
-
         print(highload_wallet.address)
         print(claim_contract.address)
         print(user_contract.address)
@@ -79,8 +76,11 @@ class ContractsService:
             .end_cell()
         )
 
+        claim_contract_address = Address('kQDYZaKkR_R9xg9vEETC6bJ7wkttJOC1MxU_SZ-UF0HqinES')
+        user_contract_address = Address('kQBxE30u-Is4onmAKUFmqGjtmJBmuQtVd73Es6kv3lrB6Wll')
+
         await highload_wallet.transfer(
-            destinations=[claim_contract.address, user_contract.address],
+            destinations=[claim_contract_address, user_contract_address],
             amounts=[amount_to_nano(0.1), amount_to_nano(0.05)],
             bodies=[claim_body, Cell.empty()],
             state_inits=[None, user_contract.state_init]
