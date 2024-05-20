@@ -107,6 +107,12 @@ class ContractsService:
             await user_contract.run_get_method(method='get_last_transaction_time', stack=[])
         ).pop()
 
+        if last_transaction_time == 0:
+            return ClaimData(
+                claim_status=ClaimStatus.FIRST_CLAIM,
+                time_to_claim=0
+            )
+
         time_diff = time() - last_transaction_time
 
         if time_diff >= 86400:

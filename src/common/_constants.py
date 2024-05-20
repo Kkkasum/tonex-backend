@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from pytoniq_core import Address, Cell
 from pytonapi.utils import amount_to_nano
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent

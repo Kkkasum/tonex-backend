@@ -28,7 +28,7 @@ class UsersService:
             time_to_claim=contract_data.time_to_claim,
             refs=user[1],
             daily_claim=user[2],
-            boost=user[3],
+            boost=user[3]
         )
 
     async def get_user_wallet(self, user_id: int) -> str | None:

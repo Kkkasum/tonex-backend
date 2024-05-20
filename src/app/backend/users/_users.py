@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
 from loguru import logger
+from pytonapi.utils import amount_to_nano
 
 from ._schemas import AddUser, AddUserResponse, UserResponse, HTTPError
 from src.services.users import users_service
