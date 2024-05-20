@@ -9,6 +9,9 @@ class UsersService:
         self.repo = UsersRepo()
 
     async def add_user(self, user: AddUser) -> None:
+        if await self.get_user_wallet(user_id=user.id):
+            return
+
         await self.repo.add_user(user_id=user.id, address=user.address, ref_id=user.ref_id)
 
     async def get_user(self, user_id: int) -> GetUser:
@@ -28,7 +31,7 @@ class UsersService:
             boost=user[3],
         )
 
-    async def get_user_wallet(self, user_id: int) -> str:
+    async def get_user_wallet(self, user_id: int) -> str | None:
         user_wallet = await self.repo.get_user_wallet(user_id=user_id)
 
         return user_wallet
