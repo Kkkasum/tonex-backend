@@ -57,6 +57,7 @@ async def add_user(user: AddUser):
 )
 async def get_user(user_id: int):
     try:
+        logger.success(user_id)
         user = await users_service.get_user(user_id=user_id)
     except Exception as e:
         logger.error(e)
