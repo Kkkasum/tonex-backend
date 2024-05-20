@@ -94,7 +94,8 @@ class ContractsService:
             user_address=Address(user_wallet)
         )
 
-        user_contract = await UserContract.from_config(provider=provider, config=config)
+        # user_contract = await UserContract.from_config(provider=provider, config=config)
+        user_contract = await UserContract.from_address(provider=provider, address=Address('EQBxE30u-Is4onmAKUFmqGjtmJBmuQtVd73Es6kv3lrB6dLv'))
 
         return user_contract
 
