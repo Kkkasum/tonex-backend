@@ -26,7 +26,6 @@ router = APIRouter()
 )
 async def add_user(user: AddUser):
     try:
-        logger.error(f'{user.id, user.address, user.ref_id}')
         await users_service.add_user(user)
     except Exception as e:
         detail = f'While adding new user error occured: {e}'
