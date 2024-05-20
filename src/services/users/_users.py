@@ -28,5 +28,15 @@ class UsersService:
             boost=user[3],
         )
 
+    async def get_user_wallet(self, user_id: int) -> str:
+        user_wallet = await self.repo.get_user_wallet(user_id=user_id)
+
+        return user_wallet
+
+    async def first_claim(self, user_id: int) -> None:
+        user_wallet = await self.get_user_wallet(user_id=user_id)
+
+        await contracts_service.first_claim(user_wallet=user_wallet)
+
 
 users_service = UsersService()

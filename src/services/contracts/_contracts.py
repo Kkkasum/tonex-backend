@@ -1,9 +1,13 @@
+import asyncio
 from time import time
 
-from pytoniq import LiteClientLike, HighloadWallet
-from pytoniq_core import Address, begin_cell
+from pytoniq import LiteClientLike, HighloadWallet, LiteServerError
+from pytoniq_core import Address, begin_cell, Cell
 from pytonapi.utils import amount_to_nano
 
+from loguru import logger
+
+from src.common import FIRST_CLAIM_AMOUNT
 from ._provider import Providers
 from ._claim_contract import ClaimContract
 from ._user_contract import UserContract, UserConfig
@@ -23,54 +27,65 @@ class ContractsService:
             user_address=Address(user_wallet)
         )
 
-        user_contract = await UserContract.from_config(provider=provider, config=config)
-        if user_contract.account.state.type_ == 'uninitialized':
-            return user_contract
+        return await UserContract.from_config(provider=provider, config=config)
 
     @staticmethod
     async def _get_highload(provider: LiteClientLike) -> HighloadWallet:
-        highload_wallet = await Wallet.create_highload(provider=provider)
-        if highload_wallet.account.state.type_ == 'uninitialized':
-            wallet = await Wallet.create_main(provider=provider)
+        highload_wallet = await Wallet.create_admin_highload(provider=provider)
+        wallet = await Wallet.create_admin(provider=provider)
+
+        highload_wallet_balance = await highload_wallet.get_balance()
+
+        # deposit ton if low balance
+        if highload_wallet_balance < amount_to_nano(0.2):
+            await wallet.transfer(destination=highload_wallet.address, amount=amount_to_nano(0.2))
+
+        while highload_wallet_balance < amount_to_nano(0.2):
             highload_wallet_balance = await highload_wallet.get_balance()
 
-            # deposit ton if low balance
-            if highload_wallet_balance < amount_to_nano(0.05):
-                status = await wallet.transfer(destination=highload_wallet.address, amount=amount_to_nano(0.05))
-                print(status)
-            await highload_wallet.deploy_via_external()
+        if highload_wallet.account.state.type_ == 'uninitialized':
+            try:
+                await highload_wallet.deploy_via_external()
+            except LiteServerError as e:
+                if e.code != 0:
+                    logger.error(e)
+
+        await asyncio.sleep(5)
 
         return highload_wallet
 
-    async def deploy_user_contracts(self, wallets: list[str]) -> None:
-        claim_contract = await ClaimContract.from_config(provider=self.provider)
-
-        user_contracts = [
-            (
-                await self._create_user_contract(
-                    provider=self.provider,
-                    admin_address=claim_contract.address,
-                    user_wallet=wallet
-                )
-            )
-            for wallet in wallets
-        ]
-        user_contracts_addresses = [user_contract.address for user_contract in user_contracts]
-
+    async def first_claim(self, user_wallet: str):
         highload_wallet = await self._get_highload(provider=self.provider)
+        claim_contract = await ClaimContract.from_config(provider=self.provider, admin_address=highload_wallet.address)
+        user_contract = await self._create_user_contract(
+            provider=self.provider,
+            admin_address=claim_contract.address,
+            user_wallet=user_wallet
+        )
 
-        amounts = [amount_to_nano(0.15) * len(user_contracts)]
-        bodies = [begin_cell().end_cell() * len(user_contracts)]
+        print(highload_wallet.address)
+        print(claim_contract.address)
+        print(user_contract.address)
 
-        await highload_wallet.transfer(destinations=user_contracts_addresses, amounts=amounts, bodies=bodies)
-        [
-            await user_contract.deploy_via_external()
-            for user_contract in user_contracts
-        ]
+        claim_body = (
+            begin_cell()
+                .store_uint(claim_contract.op.first_claim, 32)
+                .store_uint(0, 64)
+                .store_coins(FIRST_CLAIM_AMOUNT)
+                .store_address(user_wallet)
+            .end_cell()
+        )
 
-    @staticmethod
-    async def _get_user_contract(provider: LiteClientLike, user_wallet: str) -> UserContract:
-        claim_contract = await ClaimContract.from_config(provider=provider)
+        await highload_wallet.transfer(
+            destinations=[claim_contract.address, user_contract.address],
+            amounts=[amount_to_nano(0.1), amount_to_nano(0.05)],
+            bodies=[claim_body, Cell.empty()],
+            state_inits=[None, user_contract.state_init]
+        )
+
+    async def _get_user_contract(self, provider: LiteClientLike, user_wallet: str) -> UserContract:
+        highload_wallet = await self._get_highload(provider=self.provider)
+        claim_contract = await ClaimContract.from_config(provider=provider, admin_address=highload_wallet.address)
         config = UserConfig(
             admin_address=claim_contract.address,
             user_address=Address(user_wallet)

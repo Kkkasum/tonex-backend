@@ -27,6 +27,14 @@ class UsersRepo(Database):
 
             return res[0], refs, res[1], res[2]
 
+    async def get_user_wallet(self, user_id: int) -> str:
+        async with self.session_maker() as session:
+            query = select(User.address)\
+                .where(User.id == user_id)
+            res = (await session.execute(query)).first()
+
+            return res[0]
+
     async def get_user_wallets(self) -> list[str]:
         async with self.session_maker() as session:
             query = select(User.contract)

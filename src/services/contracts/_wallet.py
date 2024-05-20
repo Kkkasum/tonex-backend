@@ -3,7 +3,7 @@ import json
 
 from pytoniq import HighloadWallet, WalletV4, WalletV4R2, LiteClientLike, Contract
 
-from src.common import HIGHLOAD_MNEMO_PATH, MAIN_MNEMO_PATH
+from src.common import ADMIN_HIGHLOAD_MNEMO_PATH, ADMIN_MNEMO_PATH
 
 
 class Wallet(Contract):
@@ -26,18 +26,18 @@ class Wallet(Contract):
             return mnemo
 
     @classmethod
-    async def create_highload(cls, provider: LiteClientLike) -> HighloadWallet:
-        if not os.path.isfile(HIGHLOAD_MNEMO_PATH):
+    async def create_admin_highload(cls, provider: LiteClientLike) -> HighloadWallet:
+        if not os.path.isfile(ADMIN_HIGHLOAD_MNEMO_PATH):
             mnemo, highload_wallet = await HighloadWallet.create(provider=provider)
-            cls.save_mnemo(HIGHLOAD_MNEMO_PATH, mnemo)
+            cls.save_mnemo(ADMIN_HIGHLOAD_MNEMO_PATH, mnemo)
         else:
-            mnemo = cls.get_mnemo(HIGHLOAD_MNEMO_PATH)
+            mnemo = cls.get_mnemo(ADMIN_HIGHLOAD_MNEMO_PATH)
             highload_wallet = await HighloadWallet.from_mnemonic(provider=provider, mnemonics=mnemo)
 
         return highload_wallet
 
     @classmethod
-    async def create_main(cls, provider: LiteClientLike) -> WalletV4:
-        mnemo = cls.get_mnemo(MAIN_MNEMO_PATH)
+    async def create_admin(cls, provider: LiteClientLike) -> WalletV4:
+        mnemo = cls.get_mnemo(ADMIN_MNEMO_PATH)
 
         return await WalletV4R2.from_mnemonic(provider=provider, mnemonics=mnemo)

@@ -5,13 +5,12 @@ from ._models import Chain
 
 class Providers:
     def __init__(self, chain: Chain):
-        self.chain = chain
         self.providers = {
             Chain.MAINNET: MainnetProvider(),
             Chain.TESTNET: TestnetProvider()
         }
         # self.cur_provider = self.providers[self.chain]
-        self.cur_provider = self.providers[self.chain].provider
+        self.cur_provider = self.providers[chain].provider
 
 
 class MainnetProvider:
